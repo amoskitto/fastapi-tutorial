@@ -1,0 +1,22 @@
+version: "3"
+services:
+    api:
+        build: .
+        ports:
+            - "8000:8000"
+        depends_on:
+            - db
+        environment:
+            DATABASE_URL: postgresql://postgres:amoskitto88@db/fastapi
+
+    db:
+        image: postgres:15
+        environment:
+            POSTGRES_PASSWORD: amoskitto88
+            POSTGRES_DB: fastapi
+            POSTGRES_USER: postgres
+        volumes:
+            - postgres-db:/var/lib/postgresql/data
+
+volumes:
+    postgres-db:

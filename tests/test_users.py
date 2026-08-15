@@ -1,5 +1,6 @@
 from fastapi import FastAPI
 from fastapi.testclient import TestClient
+import pytest
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy.ext.declarative import declarative_base
@@ -21,8 +22,6 @@ TestingSessionLocal = sessionmaker(
 
 Base.metadata.create_all(bind=engine)
 
-
-
 def override_get_db():
     db = TestingSessionLocal()
     try:
@@ -32,16 +31,19 @@ def override_get_db():
         
 app.dependency_overrides[get_db] = override_get_db
 
+@pytest.fixture
+def client():
+    Base.metadata.create_all(bind=engine)
+    yield TestClient(app)
+    Base.metadata.drop_all(bind=engine)
 
-client = TestClient(app)
-
-def test_root():
+def test_root(client):
     res = client.get("/")
     print(res.json())
     assert res.json().get("message") == "Bind mount is now working"
     assert res.status_code == 200
     
-def test_create_user():
+def test_create_user(client):
     res = client.post("/users/", json={"email": "test@example.com", "password": "password123"})
     print(res.json())
     assert res.status_code == 201

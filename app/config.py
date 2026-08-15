@@ -1,5 +1,9 @@
 from pydantic_settings import BaseSettings
+from dotenv import load_dotenv
+import os
 
+# Load .env file from the project root
+load_dotenv(override=True)
 
 class Settings(BaseSettings):
     database_hostname: str
@@ -13,5 +17,6 @@ class Settings(BaseSettings):
     
     class Config:
         env_file = ".env"
+        env_file_encoding = "utf-8"
 
 settings = Settings()

@@ -53,11 +53,27 @@ def client(session):
     yield TestClient(app)
     
 @pytest.fixture
+def test_user2(client):
+    user_data = {"email":  "test123@example.com",
+                "password": "password123"}
+    res = client.post("/users/", json=user_data)
+    
+    assert res.status_code == 201
+    
+    new_user = res.json()
+    new_user['password'] = user_data['password']
+    return new_user
+   
+    
+    
+@pytest.fixture
 def test_user(client):
     user_data = {"email":  "test@example.com",
                 "password": "password123"}
     res = client.post("/users/", json=user_data)
+    
     assert res.status_code == 201
+    
     new_user = res.json()
     new_user['password'] = user_data['password']
     return new_user
@@ -78,11 +94,12 @@ def authorized_client(client, token):
     return client
 
 @pytest.fixture
-def test_posts(test_user, session):
+def test_posts(test_user, session, test_user2):
     posts_data = [
         {"title": "First Post", "content": "Content of the first post", "owner_id": test_user['id']},
         {"title": "Second Post", "content": "Content of the second post", "owner_id": test_user['id']},
-        {"title": "Third Post", "content": "Content of the third post", "owner_id": test_user['id']}
+        {"title": "Third Post", "content": "Content of the third post", "owner_id": test_user['id']},
+        {"title": "second user  Post", "content": "Content of the second user post", "owner_id": test_user2['id']}
     ]
     
     def create_post_model(post):

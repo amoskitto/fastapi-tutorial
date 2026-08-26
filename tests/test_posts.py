@@ -103,3 +103,15 @@ def test_update_other_user_post(authorized_client, test_user, test_user2, test_p
     }
     res = authorized_client.put(f"/posts/{test_posts[3].id}", json=data)
     assert res.status_code == 403
+    
+def test_unauthorized_user_update_post(client, test_user, test_posts):
+    res = client.put(f"/posts/{test_posts[0].id}")  # ✅ Fixed
+    assert res.status_code == 401
+
+def test_update_post_non_exist(authorized_client, test_user, test_posts):
+    data =  {
+            "title": "updated title",
+            "content": "updated content",
+        }
+    res = authorized_client.put(f"/posts/800000", json=data)  # ✅ Fixed (no f-string needed)
+    assert res.status_code == 404

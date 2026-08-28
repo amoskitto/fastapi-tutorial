@@ -1,11 +1,11 @@
-from pydantic import BaseModel, EmailStr, Field
+from pydantic import BaseModel, EmailStr
 from datetime import datetime
 from typing import Optional, Annotated
 from pydantic import conint
 
 
 #schema is used to ensure consistent info or validating the information provided by the user 
-class PostBase(BaseModel):
+class PostBase(BaseModel):  
     title: str
     content: str
     published: bool = True
@@ -60,4 +60,4 @@ class TokenData(BaseModel):
 
 class Vote(BaseModel):
     post_id: int
-    dir: Annotated[int, Field(le=1)]
+    dir: Annotated[int, conint(le=1)]

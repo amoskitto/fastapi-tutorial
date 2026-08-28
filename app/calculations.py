@@ -34,6 +34,11 @@ class BankAccount:
             raise ValueError("Insufficient funds")
         self.balance -= amount
         return self.balance
+    
+    def withdraw(self, amount):
+        if amount > self.balance:
+            raise Exception("Insufficient funds")
+        self.balance -= amount
 
     def collect_interest(self, rate=0.01):
         """Add interest to the account based on current balance."""
@@ -42,21 +47,3 @@ class BankAccount:
         interest = self.balance * rate
         self.balance += interest
         return self.balance
-    
-def test_bank_transactions():
-    account = BankAccount(100)
-    assert account.deposit(50) == 150
-    assert account.withdraw(30) == 120
-    assert account.collect_interest(0.05) == 126
-    try:
-        account.withdraw(200)
-    except ValueError as e:
-        assert str(e) == "Insufficient funds"
-    try:
-        account.deposit(-10)
-    except ValueError as e:
-        assert str(e) == "Cannot deposit negative amount"
-    try:
-        account.withdraw(-20)
-    except ValueError as e:
-        assert str(e) == "Cannot withdraw negative amount"

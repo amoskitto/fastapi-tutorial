@@ -7,14 +7,28 @@ jobs:
     runs-on: ubuntu-latest
     
     env:
-      DATABASE_HOSTNAME: ${{ secrets.DATABASE_HOSTNAME }}
-      DATABASE_PORT: ${{ secrets.DATABASE_PORT }}
+      DATABASE_HOSTNAME: localhost
+      DATABASE_PORT: 5433
       DATABASE_PASSWORD: ${{ secrets.DATABASE_PASSWORD }}
-      DATABASE_NAME: ${{ secrets.DATABASE_NAME }}
-      DATABASE_USERNAME: ${{ secrets.DATABASE_USERNAME }}
+      DATABASE_NAME: fastapi_test
+      DATABASE_USERNAME: postgres
       SECRET_KEY: ${{ secrets.SECRET_KEY }}
       ALGORITHM: ${{ secrets.ALGORITHM }}
       ACCESS_TOKEN_EXPIRE_MINUTES: ${{ secrets.ACCESS_TOKEN_EXPIRE_MINUTES }}
+    
+    services:
+      postgres:
+        image: postgres:15
+        env:
+          POSTGRES_PASSWORD: ${{ secrets.DATABASE_PASSWORD }}
+          POSTGRES_DB: fastapi_test
+        ports:
+          - 5433:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
     
     steps:
       - name: pulling git repo
@@ -34,4 +48,4 @@ jobs:
       - name: test with pytest
         run: |
           pip install pytest
-          pytest
+          pytest tests/ -v --disable-warnings

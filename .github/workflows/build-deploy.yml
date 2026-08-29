@@ -2,32 +2,36 @@ name: Build and Deploy Code
 
 on: [push, pull_request]
 
-
 jobs:
-    job1:
-        env:
-          DATABASE_HOSTNAME=localhost
-          DATABASE_PORT=5433
-          DATABASE_PASSWORD=chikodiri2667amos
-          DATABASE_NAME=fastapi_test
-          DATABASE_USERNAME=postgres
-          SECRET_KEY=0a710e89ee2177e2e9cc657a31924f51ffcc5b855875bc35dd28e403b87737f4
-          ALGORITHM=HS256
-          ACCESS_TOKEN_EXPIRE_MINUTES=60
-        runs-on: ubuntu-latest
-        steps:
-            - name: pulling git repo
-              uses: actions/checkout@v2
-            - name: install python version 3.9
-              uses: actions/setup-python@v2
-              with:
-                python-version: "3.9"
-            - name: update pip
-              run: python -m pip install --upgrade pip
-            - name: install all dependencies
-              run: pip install -r requirements.txt
-            - name: test with  pytest
-              run: |
-               pip install pytest
-               pytest
-
+  job1:
+    runs-on: ubuntu-latest
+    
+    env:
+      DATABASE_HOSTNAME: ${{ secrets.DATABASE_HOSTNAME }}
+      DATABASE_PORT: ${{ secrets.DATABASE_PORT }}
+      DATABASE_PASSWORD: ${{ secrets.DATABASE_PASSWORD }}
+      DATABASE_NAME: ${{ secrets.DATABASE_NAME }}
+      DATABASE_USERNAME: ${{ secrets.DATABASE_USERNAME }}
+      SECRET_KEY: ${{ secrets.SECRET_KEY }}
+      ALGORITHM: ${{ secrets.ALGORITHM }}
+      ACCESS_TOKEN_EXPIRE_MINUTES: ${{ secrets.ACCESS_TOKEN_EXPIRE_MINUTES }}
+    
+    steps:
+      - name: pulling git repo
+        uses: actions/checkout@v2
+      
+      - name: install python version 3.9
+        uses: actions/setup-python@v2
+        with:
+          python-version: "3.9"
+      
+      - name: update pip
+        run: python -m pip install --upgrade pip
+      
+      - name: install all dependencies
+        run: pip install -r requirements.txt
+      
+      - name: test with pytest
+        run: |
+          pip install pytest
+          pytest

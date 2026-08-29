@@ -8,11 +8,11 @@ jobs:
     environment: testing
     
     env:
-      DATABASE_HOSTNAME: ${{ secrets.DATABASE_HOSTNAME }}
-      DATABASE_PORT: ${{ secrets.DATABASE_PORT }}
+      DATABASE_HOSTNAME: localhost
+      DATABASE_PORT: 5432
       DATABASE_PASSWORD: ${{ secrets.DATABASE_PASSWORD }}
-      DATABASE_NAME: ${{ secrets.DATABASE_NAME }}
-      DATABASE_USERNAME: ${{ secrets.DATABASE_USERNAME }}
+      DATABASE_NAME: fastapi_test
+      DATABASE_USERNAME: postgres
       SECRET_KEY: ${{ secrets.SECRET_KEY }}
       ALGORITHM: ${{ secrets.ALGORITHM }}
       ACCESS_TOKEN_EXPIRE_MINUTES: ${{ secrets.ACCESS_TOKEN_EXPIRE_MINUTES }}
@@ -25,11 +25,6 @@ jobs:
           POSTGRES_DB: fastapi_test
         ports:
           - 5432:5432
-        options: >-
-          --health-cmd "pg_isready -U postgres -d fastapi_test"
-          --health-interval 10s
-          --health-timeout 5s
-          --health-retries 5
     
     steps:
       - name: pulling git repo
@@ -46,12 +41,27 @@ jobs:
       - name: install all dependencies
         run: pip install -r requirements.txt
       
-      - name: Debug PostgreSQL connection
+      - name: Debug PostgreSQL container
         run: |
-          echo "Checking if PostgreSQL is running..."
+          echo "=== Docker containers ==="
           docker ps -a
-          echo "Testing connection..."
-          pg_isready -h localhost -p 5432 -U postgres || echo "PostgreSQL not ready"
+          echo "=== PostgreSQL logs ==="
+          docker logs $(docker ps -aq --filter "ancestor=postgres:15") 2>/dev/null || echo "No container found"
+      
+      - name: Wait for PostgreSQL to be ready
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y postgresql-client
+          for i in {1..15}; do
+            if pg_isready -h localhost -p 5432 -U postgres; then
+              echo "PostgreSQL is ready!"
+              exit 0
+            fi
+            echo "Waiting for PostgreSQL... ($i/15)"
+            sleep 2
+          done
+          echo "PostgreSQL never became ready"
+          exit 1
       
       - name: test with pytest
         run: |

@@ -56,6 +56,11 @@ jobs:
           echo "PostgreSQL never became ready"
           exit 1
       
+      - name: Override .env port for tests  # ✅ ADD THIS
+        run: |
+          sed -i 's/DATABASE_PORT=.*/DATABASE_PORT=5433/' .env
+          echo "DATABASE_PORT=5433" >> .env
+      
       - name: test with pytest
         run: |
           pip install pytest
@@ -87,4 +92,4 @@ jobs:
           tags: ${{ steps.meta.outputs.tags }}
           annotations: ${{ steps.meta.outputs.annotations }}
           provenance: true
-          sbom: true# Testing port 5433
+          sbom: true

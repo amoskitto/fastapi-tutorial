@@ -79,7 +79,7 @@ jobs:
         id: meta
         uses: docker/metadata-action@v5
         with:
-          images: YOUR_DOCKERHUB_USERNAME/fastapi-tutorial  # Replace with your username
+          images: amosogonna/fastapi-tutorial  # Replace with your username
           tags: |
             type=sha,prefix={{branch}}-
             type=raw,value=latest

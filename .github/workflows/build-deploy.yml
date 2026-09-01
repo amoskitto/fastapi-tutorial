@@ -87,4 +87,4 @@ jobs:
           tags: ${{ steps.meta.outputs.tags }}
           annotations: ${{ steps.meta.outputs.annotations }}
           provenance: true
-          sbom: true
+          sbom: true# Testing port 5433

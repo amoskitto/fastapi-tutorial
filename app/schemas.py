@@ -2,6 +2,7 @@ from pydantic import BaseModel, EmailStr
 from datetime import datetime
 from typing import Optional, Annotated
 from pydantic import conint
+from pydantic import Field
 
 
 #schema is used to ensure consistent info or validating the information provided by the user 
@@ -60,4 +61,4 @@ class TokenData(BaseModel):
 
 class Vote(BaseModel):
     post_id: int
-    dir: Annotated[int, conint(le=1)]
+    dir: int = Field(..., ge=0, le=1)

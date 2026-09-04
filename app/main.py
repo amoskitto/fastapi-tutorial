@@ -28,7 +28,7 @@ app.include_router(vote.router)
 
 @app.get("/")
 def root():
-    return {"message": "Bind mount is now working"}
+    return {"message": "hello world checking if ci/cd is working"}
 
 
 

@@ -56,11 +56,17 @@ jobs:
           echo "PostgreSQL never became ready"
           exit 1
       
-      - name: Override .env port for tests  # ✅ ADD THIS
+      - name: Create .env file for tests
         run: |
-          sed -i 's/DATABASE_PORT=.*/DATABASE_PORT=5433/' .env
+          echo "DATABASE_HOSTNAME=localhost" >> .env
           echo "DATABASE_PORT=5433" >> .env
-      
+          echo "DATABASE_PASSWORD=${{ secrets.DATABASE_PASSWORD }}" >> .env
+          echo "DATABASE_NAME=fastapi_test" >> .env
+          echo "DATABASE_USERNAME=postgres" >> .env
+          echo "SECRET_KEY=${{ secrets.SECRET_KEY }}" >> .env
+          echo "ALGORITHM=${{ secrets.ALGORITHM }}" >> .env
+          echo "ACCESS_TOKEN_EXPIRE_MINUTES=${{ secrets.ACCESS_TOKEN_EXPIRE_MINUTES }}" >> .env
+            
       - name: test with pytest
         run: |
           pip install pytest

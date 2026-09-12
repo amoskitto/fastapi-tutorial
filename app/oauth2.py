@@ -1,9 +1,15 @@
 from jose import JWTError, jwt
 from datetime import datetime, timedelta, timezone
+
+from app import models
 from . import schemas
 from fastapi import Depends, HTTPException, status
 from fastapi.security import OAuth2PasswordBearer
 from .config import settings
+from sqlalchemy.orm import Session
+from .database import get_db
+
+
 
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl='login')
 
@@ -38,3 +44,18 @@ def verify_access_token(token: str, credentials_exception):
 def get_current_user(token: str = Depends(oauth2_scheme)):
     credentials_exception = HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail=f"Could not validate credentials", headers={"WWW-Authenticate": "Bearer"})
     return verify_access_token(token, credentials_exception)
+
+def require_pro(
+    current_user=Depends(get_current_user),
+    db: Session = Depends(get_db),
+):
+    user_id = getattr(current_user, "id", None) or getattr(current_user, "user_id", None)
+    user = db.query(models.User).filter(models.User.id == int(user_id)).first()
+    if user is None:
+        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="User not found")
+    if user.subscription_status != "PRO":
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="PRO subscription required to vote",
+        )
+    return user

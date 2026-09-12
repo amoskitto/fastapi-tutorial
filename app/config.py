@@ -14,6 +14,9 @@ class Settings(BaseSettings):
     secret_key: str
     algorithm: str
     access_token_expire_minutes: int
+    paystack_public_key: str
+    paystack_secret_key: str
+    paystack_callback_url: str
     
     class Config:
         env_file = ".env"

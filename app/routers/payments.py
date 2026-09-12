@@ -112,8 +112,6 @@ def create_checkout_session(
         "reference": data["reference"],
     }
 
-print("KEY STARTS WITH:", settings.paystack_secret_key[:8])
-print("KEY LENGTH:", len(settings.paystack_secret_key))
 
 
 @router.get("/callback")

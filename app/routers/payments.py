@@ -66,7 +66,11 @@ def create_checkout_session(
     user = db.query(models.User).filter(models.User.id == int(user_id)).first()
     if user is None:
         raise HTTPException(status_code=401, detail="User not found")
-
+    if user.subscription_status == "PRO":
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="You are already a PRO user",
+        )
     try:
         response = paystack.transaction.initialize(
             email=user.email,

@@ -68,7 +68,7 @@ jobs:
           echo "ACCESS_TOKEN_EXPIRE_MINUTES=${{ secrets.ACCESS_TOKEN_EXPIRE_MINUTES }}" >> .env
           echo "PAYSTACK_PUBLIC_KEY=${{ secrets.PAYSTACK_PUBLIC_KEY }}" >> .env
           echo "PAYSTACK_SECRET_KEY=${{ secrets.PAYSTACK_SECRET_KEY }}" >> .env
-          echo "PAYSTACK_CALLBACK_URL=http://localhost:8000/payments/callback" >> .env
+          echo "PAYSTACK_CALLBACK_URL=${{ secrets.PAYSTACK_CALLBACK_URL }}" >> .env
       - name: test with pytest
         run: |
           pip install pytest

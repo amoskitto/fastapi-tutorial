@@ -67,15 +67,18 @@ def test_user2(client):
     
     
 @pytest.fixture
-def test_user(client):
-    user_data = {"email":  "test@example.com",
-                "password": "password123"}
+def test_user(client, session):
+    user_data = {"email": "test@example.com", "password": "password123"}
     res = client.post("/users/", json=user_data)
-    
     assert res.status_code == 201
-    
+
     new_user = res.json()
-    new_user['password'] = user_data['password']
+    new_user["password"] = user_data["password"]
+
+    user = session.query(models.User).filter(models.User.id == new_user["id"]).first()
+    user.subscription_status = "PRO"
+    session.commit()
+
     return new_user
 
 
